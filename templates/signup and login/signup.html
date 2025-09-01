@@ -1,0 +1,94 @@
+{% extends "./base.html" %}
+
+{% block body %}
+<div style="align-items: center;">
+<div id="signup-div">
+    <p>Nombre:<input class="form__field"  id="Nombre" type="text"></p>
+    <p>Email:<input class="form__field"  id="Email" type="text"></p>
+    <p>Contraseña:<input class="form__field" id="Contraseña" type="password"></p>
+
+    <button onclick="signup()">Signup</button>
+</div>
+
+<div id="verificacion-div" style="display:none;">
+    <p>Ingrese el código enviado a su email:</p>
+    <input class="form__field"  id="Codigo" type="text" maxlength="6">
+    <button onclick="verificarCodigo()">Verificar Código</button>
+</div>
+
+</div>
+
+<script>
+    let emailGlobal = "";
+
+    function signup() {
+        const Nombre = document.getElementById('Nombre').value;
+        const Email = document.getElementById('Email').value;
+        const Contraseña = document.getElementById('Contraseña').value;
+
+        fetch('/signup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                Nombre: Nombre,
+                Email: Email,
+                Contraseña: Contraseña
+            })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success) {
+                    if (data.error == "El email ya está registrado") {
+                        window.location.href = '/';
+                    } else {
+                        alert("Error: " + data.error);
+                    }
+
+                } else {
+                    emailGlobal = Email;
+                    alert("Usuario creado. Revisa tu email para el codigo de verificacion.");
+                    document.getElementById('signup-div').style.display = 'none';
+                    document.getElementById('verificacion-div').style.display = 'block';
+                }
+            })
+            .catch(err => {
+                console.error("Server error:", err);
+                alert("Algo salio mal.");
+            });
+    }
+
+
+
+
+
+    function verificarCodigo() {
+        const Codigo = document.getElementById('Codigo').value;
+
+        fetch('/verificar_codigo', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                Email: emailGlobal, 
+                Codigo: Codigo
+            })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success) {
+                    alert("Error: " + data.error);
+                } else {
+                    alert("Cuenta verificada y sesion iniciada.");
+                    window.location.href = '/';
+                }
+            })
+            .catch(err => {
+                console.error("Server error:", err);
+                alert("Algo salio mal.");
+            });
+    }
+</script>
+{% endblock %}
