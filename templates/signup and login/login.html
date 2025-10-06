@@ -2,45 +2,18 @@
 
 {% block body %}
 <h2>Login</h2>
-<form id="loginForm">
-  <label>Email:</label><input type="text" id="Email"><br>
-  <label>Contraseña:</label><input type="password" id="Contraseña"><br>
+<form action="/login" method="POST">
+  {{ form.csrf_token }}
+  {{ form.user.label }} {{ form.user(size=20) }}
+  <br>
+  {{ form.password.label }} {{ form.password(size=20,type="password") }}
+  <br>
   <input type="submit" value="Login">
 </form>
-
+{% if info!="" and info!="True" %}
+<h3>{{info}}</h3>
+{% endif %}
 <div id="mensaje"></div>
 
-<script>
-  document.getElementById("loginForm").addEventListener("submit", async function (event) {
-    event.preventDefault();
 
-    const email = document.getElementById("Email").value;
-    const password = document.getElementById("Contraseña").value;
-
-    try {
-      const res = await fetch("/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          Email: email,
-          Contraseña: password
-        })
-      });
-
-      const data = await res.json();
-
-      if (!data.success) {
-        alert("Error: " + data.error);
-      } else {
-        window.location.href = '/'; 
-      }
-
-    } catch (err) {
-      console.error("Server error:", err);
-      alert("Something went wrong.");
-    }
-  });
-</script>
 {% endblock %}

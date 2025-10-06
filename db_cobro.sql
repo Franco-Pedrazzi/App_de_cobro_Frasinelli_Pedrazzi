@@ -35,13 +35,15 @@ CREATE TABLE `Products` (
   `precio` decimal,
   `stock` int,
   `merchant_email` VARCHAR(40),
-  `impuestos` decimal,
-  `descuentos` decimal
+  `descuentos` decimal,
+  `tipo` VARCHAR(50),
+  `tamano` BIGINT,
+  `pixel` LONGBLOB
 );
 
 CREATE TABLE `Orders` (
   `order_id` int PRIMARY KEY AUTO_INCREMENT,
-  `email` VARCHAR(40),
+  `email` VARCHAR(40) NOT NULL,
   `merchant_email` VARCHAR(40),
   `total` decimal,
   `estado` varchar(255),
@@ -85,15 +87,7 @@ CREATE TABLE `Tickets` (
   `fecha_creacion` datetime
 );
 
-CREATE TABLE `archivos` (
-  `id_archivo` INT AUTO_INCREMENT PRIMARY KEY,
-  `product_id` INT NULL,
-  `id_entrega` INT NULL,
-  `tipo` VARCHAR(50),
-  `tamano` BIGINT,
-  `pixel` LONGBLOB,
-  FOREIGN KEY (`product_id`) REFERENCES `Products`(`product_id`) ON DELETE CASCADE
-);
+
 
 ALTER TABLE `Products` ADD FOREIGN KEY (`merchant_email`) REFERENCES `usuario` (`email`);
 
@@ -107,7 +101,7 @@ ALTER TABLE `Order_Items` ADD FOREIGN KEY (`product_id`) REFERENCES `Products` (
 
 ALTER TABLE `Payments` ADD FOREIGN KEY (`order_id`) REFERENCES `Orders` (`order_id`);
 
-ALTER TABLE `Notifications` ADD FOREIGN KEY (`email`) REFERENCES `Users` (`email`);
+ALTER TABLE `Notifications` ADD FOREIGN KEY (`email`) REFERENCES `usuario` (`email`);
 
 ALTER TABLE `Tickets` ADD FOREIGN KEY (`email`) REFERENCES `usuario` (`email`);
 

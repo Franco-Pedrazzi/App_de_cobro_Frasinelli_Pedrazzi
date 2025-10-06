@@ -1,0 +1,18 @@
+{% extends "./base.html" %}
+
+{% block body %}
+<div style="align-items: center;">
+
+<form action="/verificar_codigo" method="POST">
+  {{ form.csrf_token }}
+  {{ form.cod.label }} {{ form.cod(size=20) }}
+  <br>
+  <input type="submit" value="verificar codigo">
+</form>
+
+{% if info!="" and info!="True" %}
+<h3>{{info}}</h3>
+{% endif %}
+</div>
+
+{% endblock %}

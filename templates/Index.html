@@ -2,93 +2,20 @@
 
 {% block body %}
 <h2>examples</h2>
-<form id="example_id">
-  <label>inserte nombre del ejemplo:</label><input type="text" id="example"><br>
-  <input type="submit" value="submit">
-</form>
+    <form method="POST" action="/api/example">
+        <input type="text" name="example" placeholder="example">
+        <button type="submit">Agregar</button>
+    </form>
+
 
 <div id="ShowExamples">
-
+        {% for example in examples %}
+            <li>
+                {{ example.id_example }} - {{ example.nombre }}
+                 <a href="{{ url_for('edit_user', id_example=example.id_example) }}">Editar</a>
+                <a href="{{ url_for('delete_user', id_example=example.id_example) }}">Borrar</a>
+            </li>
+        {% endfor %}
 </div>
 
-
-<script>
-  document.getElementById("example_id").addEventListener("submit", async function (event) {
-    event.preventDefault();
-
-    const example = document.getElementById("example").value;;
-
-    try {
-      const res = await fetch("/api/example", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          nombre: example,
-        })
-      });
-
-      const data = await res.json();
-
-      if (!data.success) {
-        alert("Error: " + data.error);
-      } else {
-        window.location.href = '/';  
-      }
-
-    } catch (err) {
-      console.error("Server error:", err);
-      alert("Something went wrong.");
-    }
-  });
-
-
-function loadExample() {
-    fetch('/api/example')
-    .then(response => response.json())
-    .then(examples => {
-        const table = document.createElement("table");
-
-        table.border = 1;
-
-        const thead = document.createElement('thead');
-        const headerRow = document.createElement('tr');
-        ['id_example', 'nombre'].forEach(text => {
-            const th = document.createElement('th');
-            th.innerText = text;
-            headerRow.appendChild(th);
-        });
-
-
-        thead.appendChild(headerRow);
-        table.appendChild(thead);
-
-        const tbody = document.createElement('tbody');
-        examples.forEach(example => {
-            const row = document.createElement('tr');
-
-            [example.id_example, example.nombre].forEach(val => {
-                const td = document.createElement('td');
-                td.innerText = val;
-                row.appendChild(td);
-            });
-
-            tbody.appendChild(row);
-        });
-
-        table.appendChild(tbody);
-        const container = document.getElementById('ShowExamples');
-        container.innerHTML = '';
-        container.appendChild(table);
-    })
-    .catch(error => {
-        console.error("Error al cargar equipos:", error);
-    });
-}
-
-   
-    window.onload = loadExample;
-
-</script>
 {% endblock %}

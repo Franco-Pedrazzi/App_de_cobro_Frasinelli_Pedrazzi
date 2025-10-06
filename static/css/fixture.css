@@ -1,0 +1,113 @@
+/* Fondo general y fuente */
+body {
+    background-color: #af702e;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Estilo para el contenedor principal */
+.container {
+    max-width: 1100px;
+    margin: 50px auto;
+    background-color: #2d2e2d !important;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+}
+
+/* Título principal */
+h1 {
+    font-size: 36px;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+/* Título de secciones (fases) */
+h2 {
+    font-size: 28px;
+    color: #f5bb27;
+    border-bottom: 2px solid #f5bb27;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+/* Estilos de las tablas */
+.table {
+    width: 100%;
+    margin-bottom: 30px;
+    border-collapse: collapse;
+}
+
+.table th, .table td {
+    padding: 12px 15px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.table th {
+    background-color: #2d2e2d;
+    border: 1px solid #f5bb27;
+    color: #fff;
+    font-size: 16px;
+}
+
+.table tbody tr:nth-child(even) {
+    background-color: #f7f7f7;
+}
+
+.table tbody tr:hover {
+    background-color: #f5bb27;
+    transition: background-color 0.3s ease;
+}
+
+/* Estilo para los partidos */
+.table td {
+    font-size: 14px;
+    color: #000000;
+}
+
+/* Hover en las filas de la tabla */
+.table tr:hover td {
+    /*color: #fff;*/
+    background-color: #f5bb27;
+}
+
+/* Estilo de la tabla cuando no hay partidos */
+.no-fixture {
+    font-size: 16px;
+    color: #af702e;
+    text-align: center;
+    padding: 20px;
+}
+
+/* Fondo y estilo de las celdas */
+.table td {
+    background-color: #fff;
+}
+
+/* Estilo de los enlaces (si es necesario) */
+a {
+    text-decoration: none;
+    color: #2980b9;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+    .table th, .table td {
+        padding: 8px;
+    }
+
+    h1 {
+        font-size: 30px;
+    }
+
+    h2 {
+        font-size: 24px;
+    }
+}
