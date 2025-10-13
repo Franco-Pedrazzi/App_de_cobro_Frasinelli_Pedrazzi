@@ -1,5 +1,4 @@
-from flask import render_template,Blueprint, request, jsonify, redirect, url_for
-from collections import namedtuple
+from flask import render_template,Blueprint, request, jsonify, redirect
 
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -33,7 +32,7 @@ class Usuario(UserMixin, db.Model):
     nombre = db.Column(db.String(40))
     email = db.Column(db.String(40),primary_key=True)
     contraseña = db.Column(db.String(200))
-    rango = db.Column(db.String(20))
+
 
     def get_id(self):
         return self.email 
@@ -42,12 +41,12 @@ class Usuario(UserMixin, db.Model):
         return True
     
 class Verificacion(db.Model):
-    __tablename__ = 'Verificacion'
+    __tablename__ = 'verificacion'
     email = db.Column(db.String(40))
     codigo = db.Column(db.String(20), primary_key=True)
     nombre = db.Column(db.String(40))
     contra_codificada = db.Column(db.String(200))
-    rango = db.Column(db.String(20))
+
 
 class Login(FlaskForm):
     user = StringField('user', validators=[DataRequired()])
@@ -63,17 +62,9 @@ class VC(FlaskForm):
 
                   
 
-@SyL.context_processor
-def inject_user_rango():
-    if current_user.is_authenticated:
-        return dict(rango=current_user.rango)
-    return dict()
-    
 def verificar_codigo(form):
     global email
     codigo = form.cod.data
-
-    print("\nasdsad ",email)
 
     verif = Verificacion.query.filter_by(email=email).first()
     if not verif or verif.codigo != codigo:
@@ -87,8 +78,7 @@ def verificar_codigo(form):
     nuevo_usuario = Usuario(
         nombre=verif.nombre,
         email=verif.email,
-        contraseña=verif.contra_codificada,
-        rango=verif.rango
+        contraseña=verif.contra_codificada
     )
     db.session.add(nuevo_usuario)
     db.session.delete(verif)
@@ -105,7 +95,7 @@ def verificar_codigo_page(email=""):
     if form.validate_on_submit():
         info=verificar_codigo(form)
         if info=="True":
-            return redirect(url_for('Index'))
+            return redirect("/")
     elif email!="":
         form.user=email
     return render_template('signup and login/vc.html',form=form,info=info)
@@ -125,7 +115,7 @@ def signup(form):
     nombre = form.name.data
     email = form.user.data
     contraseña = form.password.data
-    rango = "c"
+
 
     usuario = Usuario.query.filter_by(email=email).first()
     if not (nombre and email and contraseña):
@@ -142,7 +132,7 @@ def signup(form):
     contra_codificada = generate_password_hash(contraseña)
     codigo = ''.join(random.choices('0123456789', k=6))
 
-    verif = Verificacion(email=email, codigo=codigo, nombre=nombre, contra_codificada=contra_codificada, rango=rango)
+    verif = Verificacion(email=email, codigo=codigo, nombre=nombre, contra_codificada=contra_codificada)
     db.session.add(verif)
     db.session.commit()
 
@@ -163,7 +153,7 @@ def signup_page():
             email = form.user.data
             return redirect('/verificar_codigo')
         if info=="Log":
-            return redirect(url_for('Index'))
+            return redirect("/")
         
     return render_template('signup and login/signup.html',form=form,info=info)
 
@@ -215,7 +205,12 @@ def login_url():
     if form.validate_on_submit():
         info=login(form)
         if info==True:
-            return redirect(url_for('Index'))
+            return redirect("/")
 
     return render_template('signup and login/login.html',form=form,info=info)
 
+@SyL.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect("/")

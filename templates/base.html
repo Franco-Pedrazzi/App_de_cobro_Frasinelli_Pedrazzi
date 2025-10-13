@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Copa Renault</title>
-  <link rel="stylesheet" href="../static/css/index.css">
+ 
 </head>
 
 <body>
@@ -27,7 +27,7 @@
 
       {% if current_user.is_authenticated %}
       <span>Bienvenido/a {{ current_user.Nombre }}</span>
-      <form action="{{ url_for('logout') }}" method="get" style="display:inline;">
+      <form action="/logout" method="get" style="display:inline;">
         <button type="submit">Cerrar sesión</button>
       </form>
       {% else %}

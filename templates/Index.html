@@ -2,18 +2,22 @@
 
 {% block body %}
 <h2>examples</h2>
-    <form method="POST" action="/api/example">
-        <input type="text" name="example" placeholder="example">
-        <button type="submit">Agregar</button>
-    </form>
+<form method="POST" action="/products/agregar" enctype="multipart/form-data">
+    <input type="text" name="nombre" placeholder="nombre"><br>
+    <input type="number" name="precio" placeholder="precio"><br>
+    <input type="file" id="archivo" name="archivo" placeholder="archivo"><br>
+    <button type="submit">Agregar</button>
+</form>
 
 
 <div id="ShowExamples">
-        {% for example in examples %}
+        {% for product in products %}
             <li>
-                {{ example.id_example }} - {{ example.nombre }}
-                 <a href="{{ url_for('edit_user', id_example=example.id_example) }}">Editar</a>
-                <a href="{{ url_for('delete_user', id_example=example.id_example) }}">Borrar</a>
+                <div>
+                    {{ product.nombre }} - ${{ product.precio }}
+                    <img src="`data:${product.tipo};base64,${product.pixel}`;">
+                </div>
+                
             </li>
         {% endfor %}
 </div>

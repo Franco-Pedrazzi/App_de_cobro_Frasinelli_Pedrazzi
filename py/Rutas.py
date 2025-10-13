@@ -1,11 +1,13 @@
 from flask import render_template,Blueprint
-
+from py.apis import Products
 
 rutas = Blueprint('rutas', __name__,template_folder='templates')
 
 @rutas.route("/")
 def Index():   
-    return render_template('Index.html')
+    products = Products.query.order_by(Products.product_id).all()
+    
+    return render_template('Index.html',products=products)
 
 @rutas.route("/Add_Player")
 def Create_Player():

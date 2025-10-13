@@ -1,6 +1,5 @@
-from flask import Flask, redirect,url_for
+from flask import Flask
 from flask_cors import CORS
-from flask_login import  login_required, logout_user
 
 
 from py.Rutas import rutas
@@ -25,11 +24,7 @@ app.register_blueprint(SyL)
 login_manager.init_app(app)
 login_manager.login_view = "login"
 
-@app.route("/logout")
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for("Index"))
+
 
 
 if __name__ == "__main__":

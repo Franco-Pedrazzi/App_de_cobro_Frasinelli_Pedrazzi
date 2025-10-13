@@ -12,8 +12,6 @@ CREATE TABLE `usuario` (
   `nombre` VARCHAR(40) NOT NULL,
   `email` VARCHAR(40) NOT NULL,
   `contraseña` VARCHAR(200) NOT NULL,
-  `telefono` varchar(255),
-  `historial_puntos` int,
   PRIMARY KEY (`email`)
 );
 
@@ -23,7 +21,6 @@ CREATE TABLE `verificacion` (
   `codigo` VARCHAR(20) NOT NULL,
   `contra_codificada` VARCHAR(200) NOT NULL,
   `nombre` VARCHAR(40) NOT NULL,
-  `rango` VARCHAR(20) NOT NULL,
   PRIMARY KEY (`id`)
 );
 

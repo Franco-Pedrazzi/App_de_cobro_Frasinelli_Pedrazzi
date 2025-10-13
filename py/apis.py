@@ -1,6 +1,7 @@
 from flask import Blueprint, request, redirect, url_for, flash
 from py.db import db
 from datetime import datetime
+import base64
 
 apis = Blueprint("apis", __name__)
 
@@ -69,26 +70,48 @@ def flash_and_redirect(msg, tipo="success", destino="index"):
 
 
 # PRODUCTS
-
-
-@apis.route("/products/agregar", methods=["POST"])
+@apis.route("/products/agregar", methods=["POST","Get"])
 def add_product():
     data = request.form
+    print("")
+    print(request.files)
+    archivo = request.files.get("archivo")
+
+    tipo = ""
+    tamano = 0
+    pixel = None
+
+
+    tipo = archivo.content_type
+    cont = archivo.read()
+    tamano = len(cont)
+    pixel = cont
+        
+
+    if not data.get("nombre") or not data.get("precio"):
+        return "Error: nombre y precio son obligatorios", 400
+
     nuevo = Products(
         nombre=data.get("nombre"),
         descripcion=data.get("descripcion"),
-        precio=data.get("precio"),
-        stock=data.get("stock"),
+        precio=float(data.get("precio")),
+        stock=int(data.get("stock", 0)),
         merchant_email=data.get("merchant_email"),
-        impuestos=data.get("impuestos"),
         descuentos=data.get("descuentos"),
-        tipo=data.get("tipo"),
-        tamano=data.get("tamano"),
-        pixel=data.get("pixel")
+        tipo=tipo,
+        tamano=tamano,
+        pixel=pixel
     )
-    db.session.add(nuevo)
-    db.session.commit()
-    return flash_and_redirect("Producto agregado correctamente")
+
+    try:
+        db.session.add(nuevo)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return f"Error al guardar: {e}", 500
+
+    return redirect(url_for("rutas.Index"))
+
 
 @apis.route("/products/editar/<int:product_id>", methods=["POST"])
 def update_product(product_id):
@@ -116,8 +139,6 @@ def delete_product(product_id):
 
 
 # ORDERS
-
-
 @apis.route("/orders/agregar", methods=["POST"])
 def add_order():
     data = request.form
@@ -158,8 +179,6 @@ def delete_order(order_id):
 
 
 # ORDER ITEMS
-
-
 @apis.route("/order_items/agregar", methods=["POST"])
 def add_order_item():
     data = request.form
@@ -198,8 +217,6 @@ def delete_order_item(order_item_id):
 
 
 # PAYMENTS
-
-
 @apis.route("/payments/agregar", methods=["POST"])
 def add_payment():
     data = request.form
@@ -241,8 +258,6 @@ def delete_payment(payment_id):
 
 
 # NOTIFICATIONS
-
-
 @apis.route("/notifications/agregar", methods=["POST"])
 def add_notification():
     data = request.form
@@ -269,8 +284,6 @@ def delete_notification(notification_id):
 
 
 # TICKETS
-
-
 @apis.route("/tickets/agregar", methods=["POST"])
 def add_ticket():
     data = request.form
