@@ -5,21 +5,28 @@
 <form method="POST" action="/products/agregar" enctype="multipart/form-data">
     <input type="text" name="nombre" placeholder="nombre"><br>
     <input type="number" name="precio" placeholder="precio"><br>
+    <input type="number" name="stock" placeholder="stock"><br>
+    <input type="text" name="descripcion" placeholder="descripcion"><br>
     <input type="file" id="archivo" name="archivo" placeholder="archivo"><br>
     <button type="submit">Agregar</button>
 </form>
 
 
 <div id="ShowExamples">
-        {% for product in products %}
-            <li>
-                <div>
-                    {{ product.nombre }} - ${{ product.precio }}
-                    <img src="`data:${product.tipo};base64,${product.pixel}`;">
-                </div>
-                
-            </li>
-        {% endfor %}
+<ul>
+{% for product in products %}
+    <li onclick="location.href='http://127.0.0.1:5000/Producto/{{product.product_id}}'">
+        <div>
+            {{ product.nombre }} - ${{ product.precio }}
+        </div>
+
+        {% if product.pixel and product.tipo.startswith("image/") %}
+            <img src="data:{{ product.tipo }};base64,{{ product.pixel }}"
+                 style="width:150px; height:150px; object-fit:cover; margin:5px;">
+        {% endif %}
+    </li>
+{% endfor %}
+</ul>
 </div>
 
 {% endblock %}

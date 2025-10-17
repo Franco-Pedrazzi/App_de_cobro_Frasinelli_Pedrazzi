@@ -1,37 +1,37 @@
 from flask import render_template,Blueprint
 from py.apis import Products
+import base64
+from py.LyS import current_user
+  
+
 
 rutas = Blueprint('rutas', __name__,template_folder='templates')
 
+
 @rutas.route("/")
 def Index():   
-    products = Products.query.order_by(Products.product_id).all()
-    
-    return render_template('Index.html',products=products)
+    productos = Products.query.order_by(Products.product_id).all()
 
-@rutas.route("/Add_Player")
-def Create_Player():
-    return render_template('Add/Add_Player.html')
+    products = []
+    for p in productos:
+        products.append({
+            "product_id":p.product_id,
+            "nombre": p.nombre,
+            "precio": p.precio,
+            "tipo": p.tipo, 
+            "pixel": base64.b64encode(p.pixel).decode("utf-8") if p.pixel else None
+        })
 
-@rutas.route("/Cantina")
-def Cantina():
-    return render_template('Add/Cantina.html')
-@rutas.route("/Add_Equipo")
-def hell():
-    return render_template('Add/Add_Equipo.html')
+    return render_template("Index.html", products=products)
 
-@rutas.route("/Add_Match")
-def Create_Match():
-    return render_template('Add/Add_Match.html')
+@rutas.route("/Producto/<int:product_id>")
+def Producto(product_id):
+    conexiones = Products.query.filter_by(product_id=product_id).first()
 
-@rutas.route("/Add_Staff")
-def Create_Staff():
-    return render_template('Add/Add_Staff.html')
-
-@rutas.route("/fixture")
-def fixture():
-    return render_template('fixture.html')
-
+    if not conexiones:
+        return render_template('error.html')
+    conexiones.pixel=base64.b64encode(conexiones.pixel).decode("utf-8") if conexiones.pixel else None
+    return render_template('product.html', Producto=conexiones,current_user=current_user)
 
 
 if __name__ == "__main__":

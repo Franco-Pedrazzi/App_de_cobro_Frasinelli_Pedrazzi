@@ -1,7 +1,7 @@
 from flask import Blueprint, request, redirect, url_for, flash
 from py.db import db
 from datetime import datetime
-import base64
+from py.LyS import current_user
 
 apis = Blueprint("apis", __name__)
 
@@ -73,8 +73,8 @@ def flash_and_redirect(msg, tipo="success", destino="index"):
 @apis.route("/products/agregar", methods=["POST","Get"])
 def add_product():
     data = request.form
-    print("")
-    print(request.files)
+
+    
     archivo = request.files.get("archivo")
 
     tipo = ""
@@ -86,7 +86,7 @@ def add_product():
     cont = archivo.read()
     tamano = len(cont)
     pixel = cont
-        
+    print( request.files.get("archivo"),tipo,tamano) 
 
     if not data.get("nombre") or not data.get("precio"):
         return "Error: nombre y precio son obligatorios", 400
@@ -96,7 +96,7 @@ def add_product():
         descripcion=data.get("descripcion"),
         precio=float(data.get("precio")),
         stock=int(data.get("stock", 0)),
-        merchant_email=data.get("merchant_email"),
+        merchant_email=current_user.email,
         descuentos=data.get("descuentos"),
         tipo=tipo,
         tamano=tamano,
@@ -113,7 +113,7 @@ def add_product():
     return redirect(url_for("rutas.Index"))
 
 
-@apis.route("/products/editar/<int:product_id>", methods=["POST"])
+@apis.route("/products/editar/<int:product_id>", methods=["Put"])
 def update_product(product_id):
     producto = Products.query.get(product_id)
     if not producto:
@@ -127,7 +127,7 @@ def update_product(product_id):
     db.session.commit()
     return flash_and_redirect("Producto actualizado correctamente")
 
-@apis.route("/products/eliminar/<int:product_id>", methods=["POST"])
+@apis.route("/products/eliminar/<int:product_id>", methods=["Delete"])
 def delete_product(product_id):
     producto = Products.query.get(product_id)
     if not producto:

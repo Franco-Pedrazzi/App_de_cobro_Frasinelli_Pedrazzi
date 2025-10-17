@@ -1,0 +1,12 @@
+{% extends "./base.html" %}
+
+{% block body %}
+<h2>{{Producto.nombre}}</h2>
+{% if current_user.email==Producto.merchant_email %}
+<input type="number" value="{{Producto.stock}}">
+{% endif %}
+<br>
+
+<img src="data:{{ Producto.tipo }};base64,{{ Producto.pixel }}"
+style="width:70%; height:70%; object-fit:cover; margin:5px;">
+{% endblock %}
