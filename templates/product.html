@@ -1,12 +1,40 @@
 {% extends "./base.html" %}
 
 {% block body %}
+
+{% if current_user==Producto.merchant_email %}
+
+<form method="Put" action="/products/editar/{{Producto.product_id}}" enctype="multipart/form-data"></form>
+
+<input type="text" value="{{Producto.nombre}}" placeholder="nombre">
+<br>
+<h3>precio:<input type="number" value="{{Producto.precio}}" placeholder="precio">$</h3>
+
+<br>
+<h3>stock:<input type="number" value="{{Producto.stock}}" placeholder="stock"></h3>
+
+<button type="submit">editar</button>
+</form>
+{% else %}
 <h2>{{Producto.nombre}}</h2>
-{% if current_user.email==Producto.merchant_email %}
-<input type="number" value="{{Producto.stock}}">
+<br>
+<h3>precio:{{Producto.precio}}$</h3>
+<br>
+<h3>stock:{{Producto.stock}}$</h3>
 {% endif %}
 <br>
 
-<img src="data:{{ Producto.tipo }};base64,{{ Producto.pixel }}"
-style="width:70%; height:70%; object-fit:cover; margin:5px;">
+<img src="data:{{ Producto.tipo }};base64,{{ pixels }}"
+style="width:50%; height:50%; object-fit:cover; margin:5px;">
+
+{% if current_user==Producto.merchant_email %}
+
+<form method="POST" action="/products/editar/{{Producto.product_id}}" enctype="multipart/form-data"></form>
+<input type="text" value="{{Producto.descripcion}}" placeholder="descripcion">
+<button type="submit">editar</button>
+</form>
+{% else %}
+<h2>{{Producto.descripcion}}</h2>
+{% endif %}
+
 {% endblock %}

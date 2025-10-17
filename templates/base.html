@@ -26,7 +26,7 @@
     <div>
 
       {% if current_user.is_authenticated %}
-      <span>Bienvenido/a {{ current_user.Nombre }}</span>
+      <span>Bienvenido/a {{ current_user.nombre }}</span>
       <form action="/logout" method="get" style="display:inline;">
         <button type="submit">Cerrar sesión</button>
       </form>

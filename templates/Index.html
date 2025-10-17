@@ -14,12 +14,13 @@
 
 <div id="ShowExamples">
 <ul>
+    
 {% for product in products %}
     <li onclick="location.href='http://127.0.0.1:5000/Producto/{{product.product_id}}'">
         <div>
             {{ product.nombre }} - ${{ product.precio }}
         </div>
-
+        
         {% if product.pixel and product.tipo.startswith("image/") %}
             <img src="data:{{ product.tipo }};base64,{{ product.pixel }}"
                  style="width:150px; height:150px; object-fit:cover; margin:5px;">

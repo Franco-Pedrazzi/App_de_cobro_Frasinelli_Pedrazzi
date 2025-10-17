@@ -1,7 +1,7 @@
 from flask import Blueprint, request, redirect, url_for, flash
 from py.db import db
 from datetime import datetime
-from py.LyS import current_user
+from flask_login import current_user
 
 apis = Blueprint("apis", __name__)
 
@@ -119,11 +119,14 @@ def update_product(product_id):
     if not producto:
         flash("Producto no encontrado", "error")
         return redirect(request.referrer)
-
     data = request.form
-    for k in ["nombre", "descripcion", "precio", "stock", "merchant_email", "impuestos", "descuentos", "tipo", "tamano", "pixel"]:
-        if k in data:
-            setattr(producto, k, data[k])
+    decripcion=data.get("decripcion")
+    if decripcion:
+        producto.decripcion=decripcion
+    else:
+        producto.nombre=data.get("nombre")
+        producto.precio=data.get("precio")
+        producto.stock=data.get("stock")
     db.session.commit()
     return flash_and_redirect("Producto actualizado correctamente")
 
