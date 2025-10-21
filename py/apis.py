@@ -113,8 +113,9 @@ def add_product():
     return redirect(url_for("rutas.Index"))
 
 
-@apis.route("/products/editar/<int:product_id>", methods=["Put"])
+@apis.route("/products/editar/<int:product_id>", methods=["POST","Get"])
 def update_product(product_id):
+    print("dsfdsfdsfdsfsdfdsfsd")
     producto = Products.query.get(product_id)
     if not producto:
         flash("Producto no encontrado", "error")

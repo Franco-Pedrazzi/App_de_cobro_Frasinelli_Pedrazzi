@@ -1,6 +1,6 @@
 from flask import render_template,Blueprint, request, jsonify, redirect
 
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from flask_login import LoginManager, UserMixin, login_user, login_required,current_user, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import random
 import smtplib
@@ -21,11 +21,10 @@ login_manager = LoginManager()
 GMAIL_USER = "renaultcup0@gmail.com"
 GMAIL_PASS = "ywer mdum zooi zvxm"
 email= ""
+
 @login_manager.user_loader
 def load_user(email):
     return Usuario.query.get(email)
-
-
 
 class Usuario(UserMixin, db.Model):
     __tablename__ = 'usuario'
@@ -47,7 +46,6 @@ class Verificacion(db.Model):
     nombre = db.Column(db.String(40))
     contra_codificada = db.Column(db.String(200))
 
-
 class Login(FlaskForm):
     user = StringField('user', validators=[DataRequired()])
     password=StringField('password', validators=[DataRequired()])
@@ -60,7 +58,12 @@ class Signup(FlaskForm):
 class VC(FlaskForm):
     cod = StringField('codigo', validators=[DataRequired()])
 
-                  
+@SyL.context_processor
+def inject_user_rango():
+    if current_user.is_authenticated:
+        print(844444444444444444444444444444444444)
+        return dict(current_user)
+    return dict()             
 
 def verificar_codigo(form):
     global email

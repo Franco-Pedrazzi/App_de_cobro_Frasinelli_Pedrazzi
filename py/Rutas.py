@@ -32,8 +32,8 @@ def Producto(product_id):
         return render_template('error.html')
 
     pixels=base64.b64encode(conexiones.pixel).decode("utf-8") if conexiones.pixel else None
-
-    return render_template('product.html', Producto=conexiones,current_user=current_user.email,pixels=pixels)
+    
+    return render_template('product.html', Producto=conexiones,pixels=pixels)
 
 
 if __name__ == "__main__":

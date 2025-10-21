@@ -2,36 +2,34 @@
 
 {% block body %}
 
-{% if current_user==Producto.merchant_email %}
+{% if current_user.email==Producto.merchant_email %}
+<form method="POST" action="/products/editar/{{Producto.product_id}}" enctype="multipart/form-data"></form>
+        <br>
+    <input type="text" value="{{Producto.nombre}}" placeholder="nombre">
+        <br>
+    <h3>precio:<input type="number" value="{{Producto.precio}}" placeholder="precio">$</h3>
+        <br>
+    <h3>stock:<input type="number" value="{{Producto.stock}}" placeholder="stock"></h3>
 
-<form method="Put" action="/products/editar/{{Producto.product_id}}" enctype="multipart/form-data"></form>
-
-<input type="text" value="{{Producto.nombre}}" placeholder="nombre">
-<br>
-<h3>precio:<input type="number" value="{{Producto.precio}}" placeholder="precio">$</h3>
-
-<br>
-<h3>stock:<input type="number" value="{{Producto.stock}}" placeholder="stock"></h3>
-
-<button type="submit">editar</button>
+    <button type="submit">editar</button>
 </form>
 {% else %}
 <h2>{{Producto.nombre}}</h2>
-<br>
+    <br>
 <h3>precio:{{Producto.precio}}$</h3>
-<br>
+    <br>
 <h3>stock:{{Producto.stock}}$</h3>
 {% endif %}
-<br>
+    <br>
 
 <img src="data:{{ Producto.tipo }};base64,{{ pixels }}"
 style="width:50%; height:50%; object-fit:cover; margin:5px;">
 
-{% if current_user==Producto.merchant_email %}
+{% if current_user.email==Producto.merchant_email %}
 
 <form method="POST" action="/products/editar/{{Producto.product_id}}" enctype="multipart/form-data"></form>
-<input type="text" value="{{Producto.descripcion}}" placeholder="descripcion">
-<button type="submit">editar</button>
+    <input type="text" value="{{Producto.descripcion}}" placeholder="descripcion" style="height: 250px;width: 50%;">
+    <button type="submit">editar</button>
 </form>
 {% else %}
 <h2>{{Producto.descripcion}}</h2>
