@@ -9,7 +9,7 @@ class Products(db.Model):
     __tablename__ = "Products"
     product_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nombre = db.Column(db.String(255))
-    descripcion = db.Column(db.Text)
+    descripcion = db.Column(db.String(255))
     precio = db.Column(db.Numeric)
     stock = db.Column(db.Integer)
     merchant_email = db.Column(db.String(40), db.ForeignKey('usuario.email'))
@@ -113,23 +113,20 @@ def add_product():
     return redirect(url_for("rutas.Index"))
 
 
-@apis.route("/products/editar/<int:product_id>", methods=["POST","Get"])
+@apis.route("/products/editar/<int:product_id>", methods=["POST","GET"])
 def update_product(product_id):
-    print("dsfdsfdsfdsfsdfdsfsd")
     producto = Products.query.get(product_id)
     if not producto:
         flash("Producto no encontrado", "error")
         return redirect(request.referrer)
     data = request.form
-    decripcion=data.get("decripcion")
-    if decripcion:
-        producto.decripcion=decripcion
-    else:
-        producto.nombre=data.get("nombre")
-        producto.precio=data.get("precio")
-        producto.stock=data.get("stock")
+    
+    producto.descripcion=data.get("decripcion")
+    producto.nombre=data.get("nombre")
+    producto.precio=data.get("precio")
+    producto.stock=data.get("stock")
     db.session.commit()
-    return flash_and_redirect("Producto actualizado correctamente")
+    return redirect(f"/Producto/{product_id}")
 
 @apis.route("/products/eliminar/<int:product_id>", methods=["Delete"])
 def delete_product(product_id):

@@ -2,6 +2,7 @@
 
 {% block body %}
 <h2>examples</h2>
+{% if current_user.email %}
 <form method="POST" action="/products/agregar" enctype="multipart/form-data">
     <input type="text" name="nombre" placeholder="nombre"><br>
     <input type="number" name="precio" placeholder="precio"><br>
@@ -10,7 +11,7 @@
     <input type="file" id="archivo" name="archivo" placeholder="archivo"><br>
     <button type="submit">Agregar</button>
 </form>
-
+{% endif %}
 
 <div id="ShowExamples">
 <ul>

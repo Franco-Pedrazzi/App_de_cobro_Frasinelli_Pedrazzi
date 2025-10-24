@@ -3,15 +3,25 @@
 {% block body %}
 
 {% if current_user.email==Producto.merchant_email %}
-<form method="POST" action="/products/editar/{{Producto.product_id}}" enctype="multipart/form-data"></form>
+<form method="post" action="/products/editar/{{Producto.product_id}}" >
         <br>
-    <input type="text" value="{{Producto.nombre}}" placeholder="nombre">
+    <input type="text" name="nombre" value="{{Producto.nombre}}" placeholder="nombre" required>
         <br>
-    <h3>precio:<input type="number" value="{{Producto.precio}}" placeholder="precio">$</h3>
+    <h3>precio:<input name="precio" type="number" value="{{Producto.precio}}" placeholder="precio" required>$</h3>
         <br>
-    <h3>stock:<input type="number" value="{{Producto.stock}}" placeholder="stock"></h3>
+    <h3>stock:<input name="stock" type="number" value="{{Producto.stock}}" placeholder="stock" required></h3>
+    <br>
 
+<img src="data:{{ Producto.tipo }};base64,{{ pixels }}"
+style="width:50%; height:50%; object-fit:cover; margin:5px;">
+
+
+
+
+    <input type="text" name="decripcion" value="{{Producto.descripcion}}" placeholder="descripcion" style="height: 250px;width: 50%;" required>
+    <br>
     <button type="submit">editar</button>
+
 </form>
 {% else %}
 <h2>{{Producto.nombre}}</h2>
@@ -19,20 +29,14 @@
 <h3>precio:{{Producto.precio}}$</h3>
     <br>
 <h3>stock:{{Producto.stock}}$</h3>
-{% endif %}
-    <br>
+<br>
 
 <img src="data:{{ Producto.tipo }};base64,{{ pixels }}"
 style="width:50%; height:50%; object-fit:cover; margin:5px;">
 
-{% if current_user.email==Producto.merchant_email %}
-
-<form method="POST" action="/products/editar/{{Producto.product_id}}" enctype="multipart/form-data"></form>
-    <input type="text" value="{{Producto.descripcion}}" placeholder="descripcion" style="height: 250px;width: 50%;">
-    <button type="submit">editar</button>
-</form>
-{% else %}
+<br>
 <h2>{{Producto.descripcion}}</h2>
+<button>Comprar</button>
 {% endif %}
 
 {% endblock %}

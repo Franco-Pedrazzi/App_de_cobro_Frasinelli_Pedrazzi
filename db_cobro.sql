@@ -28,7 +28,7 @@ CREATE TABLE `verificacion` (
 CREATE TABLE `Products` (
   `product_id` int PRIMARY KEY AUTO_INCREMENT,
   `nombre` varchar(255),
-  `descripcion` text,
+  `descripcion` varchar(255),
   `precio` decimal,
   `stock` int,
   `merchant_email` VARCHAR(40),
