@@ -38,18 +38,10 @@ CREATE TABLE `Products` (
   `pixel` LONGBLOB
 );
 
-CREATE TABLE `Orders` (
-  `order_id` int PRIMARY KEY AUTO_INCREMENT,
-  `email` VARCHAR(40) NOT NULL,
-  `merchant_email` VARCHAR(40),
-  `total` decimal,
-  `estado` varchar(255),
-  `fecha_creacion` datetime
-);
 
 CREATE TABLE `Order_Items` (
   `order_item_id` int PRIMARY KEY AUTO_INCREMENT,
-  `order_id` int,
+  `email` VARCHAR(40) NOT NULL,
   `product_id` int,
   `cantidad` int
 );
@@ -88,15 +80,10 @@ CREATE TABLE `Tickets` (
 
 ALTER TABLE `Products` ADD FOREIGN KEY (`merchant_email`) REFERENCES `usuario` (`email`);
 
-ALTER TABLE `Orders` ADD FOREIGN KEY (`email`) REFERENCES `usuario` (`email`);
+ALTER TABLE `Order_Items` ADD FOREIGN KEY (`email`) REFERENCES `usuario` (`email`);
 
-ALTER TABLE `Orders` ADD FOREIGN KEY (`merchant_email`) REFERENCES `usuario` (`email`);
-
-ALTER TABLE `Order_Items` ADD FOREIGN KEY (`order_id`) REFERENCES `Orders` (`order_id`);
 
 ALTER TABLE `Order_Items` ADD FOREIGN KEY (`product_id`) REFERENCES `Products` (`product_id`);
-
-ALTER TABLE `Payments` ADD FOREIGN KEY (`order_id`) REFERENCES `Orders` (`order_id`);
 
 ALTER TABLE `Notifications` ADD FOREIGN KEY (`email`) REFERENCES `usuario` (`email`);
 

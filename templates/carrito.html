@@ -1,0 +1,31 @@
+{% extends "./base.html" %}
+
+{% block body %}
+<h2>Carrito</h2>
+
+<div id="ShowExamples">
+
+        {% set total = namespace(value=0) %}
+        {% if current_user.is_authenticated %}
+            {% for orden in orders %}
+                {% set producto = products.get(orden.product_id) %}
+                {% if producto %}
+                    <h3>
+                        <form method="POST" action="/orders/update/{{ orden.product_id }}" enctype="multipart/form-data">
+                            <strong>{{ producto.nombre }}</strong> — {{ producto.precio*orden.cantidad }}$
+                            <input type="number" name="cantidad_{{ orden.product_id }}" value="{{ orden.cantidad }}" placeholder="Cantidad">
+                            <button type="submit">Actualizar</button>
+                            <button type="button" onclick="location.href='http://127.0.0.1:5000/orders/eliminar/{{ orden.product_id }}'">eliminar</button>
+                        </form>
+                        {% set total.value = total.value +producto.precio*orden.cantidad %}
+                    </h3>
+                {% endif %}
+            {% endfor %}
+            <h2>{{ total.value  }}$</h2>
+            <button>comprar</button>
+        {% else %}
+            <p>Debes iniciar sesión para ver tu carrito.</p>
+        {% endif %}
+
+</div>
+{% endblock %}

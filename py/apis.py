@@ -18,26 +18,17 @@ class Products(db.Model):
     tamano = db.Column(db.BigInteger)
     pixel = db.Column(db.LargeBinary)
 
-class Orders(db.Model):
-    __tablename__ = "Orders"
-    order_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    email = db.Column(db.String(40), db.ForeignKey('usuario.email'), nullable=False)
-    merchant_email = db.Column(db.String(40), db.ForeignKey('usuario.email'))
-    total = db.Column(db.Numeric)
-    estado = db.Column(db.String(255))
-    fecha_creacion = db.Column(db.DateTime)
 
 class OrderItems(db.Model):
     __tablename__ = "Order_Items"
     order_item_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    order_id = db.Column(db.Integer, db.ForeignKey('Orders.order_id'))
+    email = db.Column(db.String(40), db.ForeignKey('usuario.email'), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('Products.product_id'))
     cantidad = db.Column(db.Integer)
 
 class Payments(db.Model):
     __tablename__ = "Payments"
     payment_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    order_id = db.Column(db.Integer, db.ForeignKey('Orders.order_id'))
     monto = db.Column(db.Numeric)
     moneda = db.Column(db.String(255))
     estado = db.Column(db.String(255))
@@ -116,9 +107,6 @@ def add_product():
 @apis.route("/products/editar/<int:product_id>", methods=["POST","GET"])
 def update_product(product_id):
     producto = Products.query.get(product_id)
-    if not producto:
-        flash("Producto no encontrado", "error")
-        return redirect(request.referrer)
     data = request.form
     
     producto.descripcion=data.get("decripcion")
@@ -128,93 +116,56 @@ def update_product(product_id):
     db.session.commit()
     return redirect(f"/Producto/{product_id}")
 
-@apis.route("/products/eliminar/<int:product_id>", methods=["Delete"])
+@apis.route("/products/eliminar/<int:product_id>")
 def delete_product(product_id):
     producto = Products.query.get(product_id)
-    if not producto:
-        flash("Producto no encontrado", "error")
-        return redirect(request.referrer)
-    db.session.delete(producto)
-    db.session.commit()
-    return flash_and_redirect("Producto eliminado correctamente")
-
-
-# ORDERS
-@apis.route("/orders/agregar", methods=["POST"])
-def add_order():
-    data = request.form
-    nuevo = Orders(
-        email=data.get("email"),
-        merchant_email=data.get("merchant_email"),
-        total=data.get("total"),
-        estado=data.get("estado"),
-        fecha_creacion=datetime.utcnow()
-    )
-    db.session.add(nuevo)
-    db.session.commit()
-    return flash_and_redirect("Orden creada correctamente")
-
-@apis.route("/orders/editar/<int:order_id>", methods=["POST"])
-def update_order(order_id):
-    order = Orders.query.get(order_id)
-    if not order:
-        flash("Orden no encontrada", "error")
-        return redirect(request.referrer)
-
-    data = request.form
-    for k in ["email", "merchant_email", "total", "estado"]:
-        if k in data:
-            setattr(order, k, data[k])
-    db.session.commit()
-    return flash_and_redirect("Orden actualizada correctamente")
-
-@apis.route("/orders/eliminar/<int:order_id>", methods=["POST"])
-def delete_order(order_id):
-    order = Orders.query.get(order_id)
-    if not order:
-        flash("Orden no encontrada", "error")
-        return redirect(request.referrer)
-    db.session.delete(order)
-    db.session.commit()
-    return flash_and_redirect("Orden eliminada correctamente")
-
+    if current_user.email==producto.merchant_email:
+        db.session.delete(producto)
+        db.session.commit()
+    return redirect("/")
 
 # ORDER ITEMS
-@apis.route("/order_items/agregar", methods=["POST"])
-def add_order_item():
+@apis.route("/order_items/agregar/<int:product_id>", methods=["POST"])
+def add_order_item(product_id):
     data = request.form
+    producto = Products.query.get(product_id)
+    cantidad=data.get("cantidad")
+    if int(cantidad)>producto.stock:
+        return redirect(f"/Producto/{product_id}")
     nuevo = OrderItems(
-        order_id=data.get("order_id"),
-        product_id=data.get("product_id"),
-        cantidad=data.get("cantidad")
+        email=current_user.email,
+        product_id=product_id,
+        cantidad=cantidad
     )
     db.session.add(nuevo)
     db.session.commit()
-    return flash_and_redirect("Item agregado a la orden correctamente")
+    return redirect(f"/Producto/{product_id}")
 
-@apis.route("/order_items/editar/<int:order_item_id>", methods=["POST"])
-def update_order_item(order_item_id):
-    item = OrderItems.query.get(order_item_id)
-    if not item:
-        flash("Item no encontrado", "error")
-        return redirect(request.referrer)
 
+@apis.route("/orders/update/<int:product_id>", methods=["POST"])
+def update_order_item(product_id):
     data = request.form
-    for k in ["order_id", "product_id", "cantidad"]:
-        if k in data:
-            setattr(item, k, data[k])
-    db.session.commit()
-    return flash_and_redirect("Item actualizado correctamente")
+    cantidad=int(data.get(f"cantidad_{product_id}"))
+    producto = Products.query.get(product_id)
 
-@apis.route("/order_items/eliminar/<int:order_item_id>", methods=["POST"])
-def delete_order_item(order_item_id):
-    item = OrderItems.query.get(order_item_id)
-    if not item:
-        flash("Item no encontrado", "error")
-        return redirect(request.referrer)
+    if cantidad>producto.stock:
+        return redirect(f"/Producto/{product_id}")
+    
+    item = OrderItems.query.filter_by(email = current_user.email,product_id = product_id).first()
+    item.cantidad=cantidad
+
+    if cantidad<=0:
+        print(item.cantidad)
+        db.session.delete(item)
+    db.session.commit()
+    return redirect(f"/carrito")
+
+@apis.route("/orders/eliminar/<int:product_id>")
+def delete_order_item(product_id):
+    item = OrderItems.query.filter_by(product_id=product_id,email = current_user.email).first()
     db.session.delete(item)
     db.session.commit()
-    return flash_and_redirect("Item eliminado correctamente")
+    return redirect(f"/carrito")
 
 
 # PAYMENTS

@@ -3,6 +3,7 @@
 {% block body %}
 
 {% if current_user.email==Producto.merchant_email %}
+<button onclick="location.href='/products/eliminar/{{Producto.product_id}}'">eliminar</button>
 <form method="post" action="/products/editar/{{Producto.product_id}}" >
         <br>
     <input type="text" name="nombre" value="{{Producto.nombre}}" placeholder="nombre" required>
@@ -28,7 +29,7 @@ style="width:50%; height:50%; object-fit:cover; margin:5px;">
     <br>
 <h3>precio:{{Producto.precio}}$</h3>
     <br>
-<h3>stock:{{Producto.stock}}$</h3>
+<h3>stock:{{Producto.stock}}</h3>
 <br>
 
 <img src="data:{{ Producto.tipo }};base64,{{ pixels }}"
@@ -36,7 +37,20 @@ style="width:50%; height:50%; object-fit:cover; margin:5px;">
 
 <br>
 <h2>{{Producto.descripcion}}</h2>
-<button>Comprar</button>
-{% endif %}
+{% if current_user.email %}
 
+    {% if orden %}
+    <form method="POST" action="/orders/update/{{ Producto.product_id }}" enctype="multipart/form-data">
+    <input type="number" name="cantidad_{{ Producto.product_id }}" placeholder="cantidad" value="{{orden.cantidad}}"><br>
+    <button type="submit">editar compra</button>
+    </form>
+    {% else %}
+    <form method="POST" action="/order_items/agregar/{{ Producto.product_id }}" enctype="multipart/form-data">
+    <input type="number" name="cantidad" placeholder="cantidad" value><br>
+     <button type="submit">comprar</button>
+    </form>
+    {% endif %}
+
+{% endif %}
+{% endif %}
 {% endblock %}

@@ -15,9 +15,11 @@
 
 <div id="ShowExamples">
 <ul>
-    
+<form method="POST" action="/" enctype="multipart/form-data">
+<input type="text"  name="filter" placeholder="filter">
+</form>
 {% for product in products %}
-    <li onclick="location.href='http://127.0.0.1:5000/Producto/{{product.product_id}}'">
+    <h3 onclick="location.href='http://127.0.0.1:5000/Producto/{{product.product_id}}'">
         <div>
             {{ product.nombre }} - ${{ product.precio }}
         </div>
@@ -28,7 +30,7 @@
         {% endif %}
 
         
-    </li>
+    </h3>
 {% endfor %}
 </ul>
 </div>
