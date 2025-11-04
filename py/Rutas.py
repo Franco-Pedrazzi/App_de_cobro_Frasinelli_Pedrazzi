@@ -8,7 +8,7 @@ from flask_login import current_user
 rutas = Blueprint('rutas', __name__,template_folder='templates')
 
 
-@rutas.route("/<int:product_id>")
+@rutas.route("/")
 def Index():   
     productos = Products.query.order_by(Products.product_id).all()
     
