@@ -2,14 +2,30 @@
 
 {% block body %}
 <div style="align-items: center;">
-
-<form action="/signup" method="POST">
+<br>
+<br>
+<h2>Signup</h2>
+<form action="/signup" method="POST" style="width: 45%; background-color: rgb(144, 144, 144); padding: 5%; border-radius: 10%;">
   {{ form.csrf_token }}
-  {{ form.name.label }} {{ form.name(size=20) }}
+  <div class="input-group mb-3">
+
+      {{ form.name.label(class="input-group-text") }}
+
+      {{ form.name(class="form-control", size=20) }}
+  </div>
+  
   <br>
-  {{ form.user.label }} {{ form.user(size=20) }}
+  <div class="input-group mb-3">
+      {{ form.user.label(class="input-group-text") }}
+
+      {{ form.user(class="form-control", size=20) }}
+  </div>
   <br>
-  {{ form.password.label }} {{ form.password(size=20,type="password") }}
+  <div class="input-group mb-3">
+      {{ form.password.label(class="input-group-text") }}
+
+      {{ form.password(class="form-control", type="password", size=20) }}
+  </div>
   <br>
   <input type="submit" value="Signup">
 </form>

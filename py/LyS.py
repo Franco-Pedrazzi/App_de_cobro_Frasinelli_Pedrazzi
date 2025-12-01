@@ -61,7 +61,6 @@ class VC(FlaskForm):
 @SyL.context_processor
 def inject_user_rango():
     if current_user.is_authenticated:
-        print(844444444444444444444444444444444444)
         return dict(current_user)
     return dict()             
 

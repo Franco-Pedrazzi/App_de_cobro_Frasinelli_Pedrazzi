@@ -2,8 +2,12 @@ from flask import Blueprint, request, redirect, url_for, flash
 from py.db import db
 from datetime import datetime
 from flask_login import current_user
-
+import mercadopago
+import traceback
 apis = Blueprint("apis", __name__)
+
+access_token = "APP_USR-5796444415198491-100214-0079dab88cf789d8b4614de5bcc470cd-2901193336"
+sdk = mercadopago.SDK(access_token)
 
 class Products(db.Model):
     __tablename__ = "Products"
@@ -60,7 +64,6 @@ def flash_and_redirect(msg, tipo="success", destino="index"):
     return redirect(url_for(destino))
 
 
-# PRODUCTS
 @apis.route("/products/agregar", methods=["POST","Get"])
 def add_product():
     data = request.form
@@ -124,7 +127,6 @@ def delete_product(product_id):
         db.session.commit()
     return redirect("/")
 
-# ORDER ITEMS
 @apis.route("/order_items/agregar/<int:product_id>", methods=["POST"])
 def add_order_item(product_id):
     data = request.form
@@ -168,109 +170,54 @@ def delete_order_item(product_id):
     return redirect(f"/carrito")
 
 
-# PAYMENTS
-@apis.route("/payments/agregar", methods=["POST"])
-def add_payment():
-    data = request.form
-    nuevo = Payments(
-        order_id=data.get("order_id"),
-        monto=data.get("monto"),
-        moneda=data.get("moneda"),
-        estado=data.get("estado"),
-        referencia_gateway=data.get("referencia_gateway"),
-        fecha=datetime.utcnow()
-    )
-    db.session.add(nuevo)
-    db.session.commit()
-    return flash_and_redirect("Pago registrado correctamente")
+@apis.route("/comprar")
+def comprar():
+    if not current_user.is_authenticated:
+        return redirect("/login")
 
-@apis.route("/payments/editar/<int:payment_id>", methods=["POST"])
-def update_payment(payment_id):
-    pago = Payments.query.get(payment_id)
-    if not pago:
-        flash("Pago no encontrado", "error")
-        return redirect(request.referrer)
+    orders = OrderItems.query.filter_by(email=current_user.email).all()
 
-    data = request.form
-    for k in ["order_id", "monto", "moneda", "estado", "referencia_gateway"]:
-        if k in data:
-            setattr(pago, k, data[k])
-    db.session.commit()
-    return flash_and_redirect("Pago actualizado correctamente")
+    items=[]
+    for orden in orders:
+        producto=Products.query.filter_by(product_id=orden.product_id).first()
+        items.append(            {
+                "title":producto.nombre ,
+                "quantity": int(orden.cantidad),
+                "currency_id": "ARS",
+                "unit_price": float(producto.precio),
+                #"collector_id":
+            })
 
-@apis.route("/payments/eliminar/<int:payment_id>", methods=["POST"])
-def delete_payment(payment_id):
-    pago = Payments.query.get(payment_id)
-    if not pago:
-        flash("Pago no encontrado", "error")
-        return redirect(request.referrer)
-    db.session.delete(pago)
-    db.session.commit()
-    return flash_and_redirect("Pago eliminado correctamente")
+    back_links = {
+        "success": "http://localhost:5000/pago/pago_exitoso",
+        "failure": "http://localhost:5000/pago/pago_fallido",
+        "pending": "http://localhost:5000/pago/pago_pendiente",
+    }  
+    preference_data = {
+        "items":items,"back_urls": back_links,
+    }
 
+    try:
+        preference_response = sdk.preference().create(preference_data)
+        print("Respuesta completa de Mercado Pago:", preference_response)
 
-# NOTIFICATIONS
-@apis.route("/notifications/agregar", methods=["POST"])
-def add_notification():
-    data = request.form
-    nuevo = Notifications(
-        email=data.get("email"),
-        tipo=data.get("tipo"),
-        mensaje=data.get("mensaje"),
-        estado=data.get("estado"),
-        fecha=datetime.utcnow()
-    )
-    db.session.add(nuevo)
-    db.session.commit()
-    return flash_and_redirect("Notificación creada correctamente")
+        if (
+            "response" in preference_response
+            and "init_point" in preference_response["response"]
+        ):
+            init_point = preference_response["response"]["init_point"]
+            return redirect(init_point)
+        else:
+            flash("No se pudo generar el checkout. Revisa la consola.", "danger")
+            return redirect("/")
 
-@apis.route("/notifications/eliminar/<int:notification_id>", methods=["POST"])
-def delete_notification(notification_id):
-    noti = Notifications.query.get(notification_id)
-    if not noti:
-        flash("Notificación no encontrada", "error")
-        return redirect(request.referrer)
-    db.session.delete(noti)
-    db.session.commit()
-    return flash_and_redirect("Notificación eliminada correctamente")
+    except Exception as e:
+        print(" Error al crear la preferencia:", e)
+        traceback.print_exc()
+        flash("Error al generar el checkout. Revisa la consola.", "danger")
+        return redirect("/")
 
 
-# TICKETS
-@apis.route("/tickets/agregar", methods=["POST"])
-def add_ticket():
-    data = request.form
-    nuevo = Tickets(
-        email=data.get("email"),
-        payment_id=data.get("payment_id"),
-        asunto=data.get("asunto"),
-        descripcion=data.get("descripcion"),
-        estado=data.get("estado"),
-        fecha_creacion=datetime.utcnow()
-    )
-    db.session.add(nuevo)
-    db.session.commit()
-    return flash_and_redirect("Ticket creado correctamente")
 
-@apis.route("/tickets/editar/<int:ticket_id>", methods=["POST"])
-def update_ticket(ticket_id):
-    ticket = Tickets.query.get(ticket_id)
-    if not ticket:
-        flash("Ticket no encontrado", "error")
-        return redirect(request.referrer)
 
-    data = request.form
-    for k in ["email", "payment_id", "asunto", "descripcion", "estado"]:
-        if k in data:
-            setattr(ticket, k, data[k])
-    db.session.commit()
-    return flash_and_redirect("Ticket actualizado correctamente")
 
-@apis.route("/tickets/eliminar/<int:ticket_id>", methods=["POST"])
-def delete_ticket(ticket_id):
-    ticket = Tickets.query.get(ticket_id)
-    if not ticket:
-        flash("Ticket no encontrado", "error")
-        return redirect(request.referrer)
-    db.session.delete(ticket)
-    db.session.commit()
-    return flash_and_redirect("Ticket eliminado correctamente")

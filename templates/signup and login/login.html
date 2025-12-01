@@ -1,14 +1,24 @@
 {% extends "./base.html" %}
 
 {% block body %}
+<br>
+<br>
 <h2>Login</h2>
-<form action="/login" method="POST">
+<form action="/login" method="POST" style="width: 45%; background-color: rgb(144, 144, 144); padding: 5%; border-radius: 10%;">
   {{ form.csrf_token }}
-  {{ form.user.label }} {{ form.user(size=20) }}
+  <div class="input-group mb-3">
+      {{ form.user.label(class="input-group-text") }}
+
+      {{ form.user(class="form-control", size=20) }}
+  </div>
   <br>
-  {{ form.password.label }} {{ form.password(size=20,type="password") }}
+  <div class="input-group mb-3">
+      {{ form.password.label(class="input-group-text") }}
+
+      {{ form.password(class="form-control", type="password", size=20) }}
+  </div>
   <br>
-  <input type="submit" value="Login">
+  <input type="submit" value="Signup">
 </form>
 {% if info!="" and info!="True" %}
 <h3>{{info}}</h3>

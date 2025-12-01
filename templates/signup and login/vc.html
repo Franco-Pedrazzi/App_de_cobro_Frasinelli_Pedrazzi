@@ -2,10 +2,15 @@
 
 {% block body %}
 <div style="align-items: center;">
-
-<form action="/verificar_codigo" method="POST">
+<br><br>
+<h2>Verifique su codigo</h2>
+<form action="/verificar_codigo" method="POST" style="width: 45%; background-color: rgb(144, 144, 144); padding: 5%; border-radius: 10%;">
   {{ form.csrf_token }}
-  {{ form.cod.label }} {{ form.cod(size=20) }}
+  <div class="input-group mb-3">
+      {{ form.cod.label(class="input-group-text") }}
+
+      {{ form.cod(class="form-control", size=20) }}
+  </div>
   <br>
   <input type="submit" value="verificar codigo">
 </form>

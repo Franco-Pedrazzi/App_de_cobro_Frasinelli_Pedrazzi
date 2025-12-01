@@ -15,6 +15,13 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:123456@localhost/c
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'secret'
 
+access_token = "APP_USR-5796444415198491-100214-0079dab88cf789d8b4614de5bcc470cd-2901193336"
+if not access_token:
+    raise Exception(
+        "MERCADOPAGO_ACCESS_TOKEN no está definido en las variables de entorno."
+    )
+
+
 db.init_app(app)
 
 app.register_blueprint(rutas)
