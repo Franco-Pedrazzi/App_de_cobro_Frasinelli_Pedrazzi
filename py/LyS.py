@@ -150,7 +150,9 @@ def signup_page():
     form = Signup()
     if form.validate_on_submit():
         info=signup(form)
+        
         if info=="True":
+            print(info)
             global email
             email = form.user.data
             return redirect('/verificar_codigo')
